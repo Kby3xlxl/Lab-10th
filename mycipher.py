@@ -1,21 +1,30 @@
-import string
+import sys
 
-def teaser_cipher():
-    # Read text from a file named 'plaintext'
-    with open('plaintext', 'r') as file:
-        text = file.read().lower()
+if len(sys.argv) < 2:
+    print("Usage: python3 mycipher.py <shift>")
+    sys.exit(1)
 
-    shift = int(input("Enter the shift value: "))
+shift = int(sys.argv[1])
 
-    alphabet = string.ascii_lowercase
-    shifted_alphabet = alphabet[shift:] + alphabet[:shift]
-    translation_table = str.maketrans(alphabet, shifted_alphabet)
+message = ""
+for line in sys.stdin:
+    message += line
 
-    encrypted_text = text.translate(translation_table)
-    encrypted_text = encrypted_text.replace(" ", "")
-    encrypted_text = encrypted_text.upper()
+message = ''.join(filter(str.isalpha, message)).upper()
 
-    formatted_text = ' '.join(encrypted_text[i:i+5] for i in range(0, len(encrypted_text), 5))
-    print(formatted_text)
+cipher_message = ""
+for char in message:
+    cipher_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
+    cipher_message += cipher_char
 
-teaser_cipher()
+output = ""
+for x in range(len(cipher_message)):
+    if (x % 5) == 0 and x != 0:
+        output += " "
+    if (x % 50) == 0 and x != 0:
+        print(output.strip())
+        output = ""
+    output += cipher_message[x]
+
+if len(cipher_message) % 50 != 0:
+    print(output.strip())
